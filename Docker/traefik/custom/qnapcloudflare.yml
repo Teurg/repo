@@ -1,0 +1,16 @@
+http:
+  routers:
+    qnap:
+      entryPoints:
+      - https
+      service: qnap-host
+      rule: Host(`qnap.domen.ru`)
+      tls:
+        certResolver: cloudflare
+  services:
+    qnap-host:
+      loadBalancer:
+        servers:
+        - url: http://
+        passHostHeader: true
+
