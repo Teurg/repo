@@ -1,0 +1,14 @@
+Собираем образ:
+docker build -t python-server .
+
+Запускаем:
+docker run -d -p 8080:8080 my-python-http-server
+
+
+Провермяем:
+http://localhost:8080/healthz
+
+
+
+Подсматривал тут:
+https://anshu-dev.medium.com/creating-a-python-web-server-from-basic-to-advanced-449fcb38e93b
