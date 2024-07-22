@@ -1,0 +1,123 @@
+В корневой директории (можно где удобно) создаем папка docker
+
+```
+sudo mkdir docker
+```
+
+В этой папке будут храниться все docker compose файлы. Создаем папку для контейнера traefik
+
+```
+sudo mkdir traefik
+```
+
+Создаем 4 файла и две папки: acme.json для хранения всех данных сертификатов
+
+```
+sudo touch acme.json
+```
+
+На этот файл обязательно задаем права
+
+```
+sudo chmod 600 acme.json
+```
+
+
+Конфигурация для traefik
+
+```
+sudo touch traefik.yml
+```
+
+Установочный файл самого контейнера
+
+```
+sudo touch docker-compose.yml
+```
+
+Конфиг файла для traefik 
+
+```
+sudo touch config.yml
+```
+
+Создаем папку logs (для плагинов)
+
+```
+sudo mkdir logs
+```
+
+Надо создать папку для отдельных файлов конфигурации
+
+```
+sudo mkdir custom
+```
+
+Начнем наполнять конфиг
+
+```
+sudo nano traefik.yml
+```
+
+Заполняем docker compose файл что бы traefik начал работать
+
+```
+
+Создаем сеть внутри докера 
+
+```
+docker network create proxy
+```
+
+Теперь надо зашифровать наш пароль для доступа к нашему дешборду траефика. Устанавливаем утилиту
+
+```
+sudo apt install apache2-utils
+```
+
+```
+echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
+```
+
+Для работы этого конфига создает файл
+
+```
+sudo nano .env
+```
+
+Заполняет его
+
+```
+TRAEFIK_DASHBOARD_CREDENTIALS= пароль от auth
+CF_DNS_API_TOKEN= токен cloudflare
+
+
+Для проверки запускаем наш контейнер traefik
+
+```
+docker compose up -d
+```
+
+Примеры создания custom конфигов работающих вне docker
+
+``` yml
+http:
+  routers:
+    qnap:
+      entryPoints:
+      - https
+      service: qnap-host
+      rule: Host(`qnap.name.ru`)
+      tls:
+        certResolver: letsEncrypt
+  services:
+    qnap-host:
+      loadBalancer:
+        servers:
+        - url: https://ip/
+        passHostHeader: true
+```
+
+Можно указывать url удаленных серверов, надо только указать его ip адрес
+
+https://blog.unixhost.pro/ru/2022/07/traefik-2-ustanovka-nastrojka-primery/

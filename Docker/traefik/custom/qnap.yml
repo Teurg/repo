@@ -1,0 +1,15 @@
+http:
+  routers:
+    qnap:
+      entryPoints:
+      - https
+      service: qnap-host
+      rule: Host(`qnap.name.ru`)
+      tls:
+        certResolver: letsEncrypt
+  services:
+    qnap-host:
+      loadBalancer:
+        servers:
+        - url: https://ip/
+        passHostHeader: true

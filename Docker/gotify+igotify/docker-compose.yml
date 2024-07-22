@@ -1,0 +1,63 @@
+services:
+  gotify:
+    image: gotify/server
+    container_name: gotify
+    volumes:
+      - ./gotify_data:/app/data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    environment:
+      - TZ=Asia/Novosibirsk
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.entrypoints=http"
+      - "traefik.http.routers.gotify.rule=Host(`gotify.a87p.ru`)"
+      - "traefik.http.middlewares.gotify-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.gotify.middlewares=gotify-https-redirect"
+      - "traefik.http.routers.gotify-secure.entrypoints=https"
+      - "traefik.http.routers.gotify-secure.rule=Host(`gotify.a87p.ru`)"
+      - "traefik.http.routers.gotify-secure.tls=true"
+      - "traefik.http.routers.gotify-secure.service=gotify"
+      - "traefik.http.services.gotify.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+  igotify-notification:
+    container_name: igotify
+    hostname: igotify
+    image: ghcr.io/androidseb25/igotify-notification-assist:latest
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    volumes:
+      - ./api-data:/app/data
+    environment:
+    #  GOTIFY_URLS:          ''
+    #  GOTIFY_CLIENT_TOKENS: ''
+    #  SECNTFY_TOKENS:       ''
+      - TRAEFIK_DASHBOARD_CREDENTIALS:${TRAEFIK_DASHBOARD_CREDENTIALS}
+#    env_file: .env # use .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.igotify.entrypoints=http"
+      - "traefik.http.routers.igotify.rule=Host(`igotify.a87p.ru`)"
+      - "traefik.http.middlewares.igotify-auth.basicauth.users=Hrust:${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.igotify-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.igotify.middlewares=gotify-https-redirect"
+      - "traefik.http.routers.igotify-secure.entrypoints=https"
+      - "traefik.http.routers.igotify-secure.rule=Host(`igotify.a87p.ru`)"
+      - "traefik.http.routers.igotify-secure.middlewares=igotify-auth"
+      - "traefik.http.routers.igotify-secure.tls=true"
+      - "traefik.http.routers.igotify-secure.service=igotify"
+      - "traefik.http.services.igotify.loadbalancer.server.port=8080"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+
+

@@ -1,0 +1,48 @@
+Каждая из этих меток (labels) в Traefik используется для настройки маршрутизаторов, сред, TLS и других параметров. Вот расшифровка каждой из них:
+
+**"traefik.enable=true"**
+Включает Traefik для данного контейнера.
+
+**"traefik.http.routers.traefik.entrypoints=http"**
+Определяет точку входа для маршрутизатора `traefik` по протоколу HTTP.
+
+**"traefik.http.routers.traefik.rule=Host(`traefik.name.ru`)"**
+Устанавливает правило для маршрутизатора `traefik`, которое указывает, что данный маршрутизатор должен обрабатывать запросы к хосту `traefik.name.ru`.
+
+**"traefik.http.middlewares.traefik-auth.basicauth.users=Hrust:"**
+Настраивает Middleware `traefik-auth` для базовой аутентификации с пользователем `Hrust` и паролем `password`.
+
+**"traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"**
+Настраивает Middleware для перенаправления HTTP-запросов на HTTPS.
+
+**"traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"**
+Добавляет заголовок `X-Forwarded-Proto=https` к запросам.
+
+**"traefik.http.routers.traefik.middlewares=traefik-https-redirect"**
+Связывает Middleware `traefik-https-redirect` с маршрутизатором `traefik`.
+
+**"traefik.http.routers.traefik-secure.entrypoints=https"**
+Определяет точку входа для маршрутизатора `traefik-secure` по протоколу HTTPS.
+
+**"traefik.http.routers.traefik-secure.rule=Host(`traefik.name.ru`)"**
+Устанавливает правило для маршрутизатора `traefik-secure`, которое указывает, что данный маршрутизатор должен обрабатывать запросы к хосту `traefik.name.ru`.
+
+**"traefik.http.routers.traefik-secure.middlewares=traefik-auth"**
+Связывает Middleware `traefik-auth` с маршрутизатором `traefik-secure`.
+
+**"traefik.http.routers.traefik-secure.tls=true"**
+Включает TLS для маршрутизатора `traefik-secure`.
+
+**"traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"**
+Указывает, что для маршрутизатора `traefik-secure` будет использоваться сертификат, полученный через `certresolver` под именем `cloudflare`.
+
+**"traefik.http.routers.traefik-secure.tls.domains[0].main=damain.ru"**
+Устанавливает основной домен `name.ru` для TLS-сертификата.
+
+**"traefik.http.routers.traefik-secure.tls.domains[0].sans=*.domain.ru"**
+Устанавливает дополнительные SAN (Subject Alternative Name) для TLS-сертификата, включающие все поддомены `*.name.ru`.
+
+**"traefik.http.routers.traefik-secure.service=api@internal"**
+Устанавливает сервис для маршрутизатора `traefik-secure` на `api@internal`, который является внутренним API Traefik.
+
+Эти метки позволяют настроить маршрутизацию, аутентификацию и безопасное соединение с использованием Traefik.

@@ -1,0 +1,24 @@
+http:
+  routers:
+    guac:
+      entryPoints:
+      - https
+      service: guac-host
+      rule: Host(`vnc.name.ru`)
+      tls:
+        certResolver: letsEncrypt
+      middlewares:
+      - auth  # добавляем middleware здесь
+
+  services:
+    guac-host:
+      loadBalancer:
+        servers:
+        - url: http://ip/
+        passHostHeader: true
+
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+        - "hrust:$apr1$3QxJb4mP$fmSVO5X5JN6ntHqT3wPmk0"  # замените username и password_hash на ваши данные

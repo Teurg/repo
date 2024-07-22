@@ -1,0 +1,16 @@
+http:
+  routers:
+    qnap:
+      entryPoints:
+      - https
+      service: qnap-host
+      rule: Host(`qnap.a87p.ru`)
+      tls:
+        certResolver: cloudflare
+  services:
+    qnap-host:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.5:55139
+        passHostHeader: true
+

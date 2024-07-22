@@ -1,0 +1,83 @@
+docker compose файл
+
+```
+version: "3"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: guacmysql
+    environment:
+      MYSQL_DATABASE: guacamole
+      MYSQL_USER: guacuser
+      MYSQL_PASSWORD: guacPA55
+      MYSQL_ROOT_PASSWORD: myROOTpa55
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: unless-stopped
+    
+  guacd:
+    image: guacamole/guacd
+    container_name: guacd
+    restart: unless-stopped
+    depends_on:
+      - mysql
+
+  guacamole:
+    image: guacamole/guacamole
+    container_name: guacamole
+    environment:
+      MYSQL_HOSTNAME: mysql
+      MYSQL_DATABASE: guacamole
+      MYSQL_USER: guacuser
+      MYSQL_PASSWORD: guacPA55
+      GUACD_HOSTNAME: guacd
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - guacd
+```
+
+Создаем базу данных initdb.sql
+
+```
+docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
+```
+
+Импортируем данные в базу, для этого надо запустить один контейнер
+
+```
+docker compose up mysql -d
+```
+
+Прокидываем данные в контейнер
+
+```
+docker exec -i guacmysql mysql -uguacuser -pguacPA55 guacamole < initdb.sql
+```
+
+Проверяем таблицы
+
+```
+docker exec -it guacmysql mysql -uguacuser -pguacPA55 guacamole
+
+# show tables;
+# exit
+```
+
+Останавливаем этот контейнер и запускаем сразу все
+
+
+
+Заранее можно скачать все контейнеры
+
+```
+# Pull/Download Docker Images:
+docker pull guacamole/guacamole
+docker pull guacamole/guacd
+docker pull mysql:8.0
+```
+
+https://github.com/RomNero/YouTube-Infos/blob/main/Guacamole/guacamole
+https://www.youtube.com/watch?v=GAPrAsNesyU
