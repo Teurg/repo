@@ -1,0 +1,55 @@
+upstreams:
+  strategy: parallel_best
+  groups:
+    default:
+    - https://dns.cloudflare.com/dns-query
+    - https://dns10.quad9.net/dns-query
+    - https://dns.adguard-dns.com/dns-query
+
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+      - https://perflyst.github.io/PiHoleBlocklist/AmazonFireTV.txt
+      - https://perflyst.github.io/PiHoleBlocklist/SessionReplay.txt
+      - https://perflyst.github.io/PiHoleBlocklist/SmartTV.txt
+  clientGroupsBlock:
+    default:
+      - ads
+
+customDNS:
+  customTTL: 1h
+  filterUnmappedTypes: true
+  mapping:
+      qnap.a87p.ru: 192.168.1.30
+      traefik.a87p.ru: 192.168.1.30
+      vnc.a87p.ru: 192.168.1.30
+      kuma.a87p.ru: 192.168.1.30
+      gotify.a87p.ru: 192.168.1.30
+      igotify.a87p.ru: 192.168.1.30
+
+bootstrapDns:
+      - upstream: tcp-tls:dns.quad9.net
+        ips:
+        - 9.9.9.9
+        - 149.112.112.112
+      - upstream: https://1.1.1.1/dns-query
+
+clientLookup:
+  upstream: 192.168.1.1
+  clients:
+    proxmox-vds:
+      - 192.168.1.119
+    ubuntu-docker:
+      - 192.168.1.30
+
+caching:
+  minTime: 5m
+  maxTime: 30m
+  prefetching: true
+  prefetchExpires: 24h
+  prefetchThreshold: 2
+
+ports:
+  dns: 53
+  http: 4000

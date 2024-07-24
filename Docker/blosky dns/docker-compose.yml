@@ -1,0 +1,20 @@
+services:
+  blocky:
+    image: spx01/blocky:latest
+    container_name: blocky
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - /docker/blocky/config.yml:/app/config.yml
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Asia/Novosibirsk
+    networks:
+      blocky_dns:
+
+networks:
+  blocky_dns:
+    external: true
