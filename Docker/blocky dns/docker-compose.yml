@@ -11,10 +11,10 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      - TZ=Asia/Novosibirsk
+      - TZ=Asia/Novosibirsk # Установите ваш часовой пояс
     networks:
-      blocky_dns:
+      proxy:
 
 networks:
-  blocky_dns:
+  proxy:
     external: true
